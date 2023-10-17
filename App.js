@@ -1,49 +1,64 @@
-import * as React from 'react';
-import { Text, View, Image } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import * as Speech from 'expo-speech';
-import Ifsul from './Ifsul';
-import Unipampa from './Unipampa';
-import Ideau from './Ideau';
-import Icon from 'react-native-vector-icons/Ionicons'
+import React, {useState} from 'react';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet} from 'react-native';
+import MapView, {Marker} from 'react-native-maps';
+import MeuEstilo from './meuestilo'
 
-function Localif() {
-  return (
-    <Ifsul></Ifsul>
-  );
-}
+const App = () => {
 
-function Localunipampa() {
-  return (
-   <Unipampa></Unipampa>
-  );
-}
-function Localideau() {
-  return (
-    <Ideau></Ideau>
-  );
-}
+const [position, setPosition] = useState({
+  latitude: -31.308840,
+  longitude: -54.113702,
+  latitudeDelta: 0.0922,
+  longitudeDelta: 0.0421,
+});
+const [title, setTitle] = useState("");
+const [descricao, setDescricao] = useState("");
 
-const Tab = createBottomTabNavigator();
 
-export default function App() {
+const enviarDados=()=>{}
+
   return (
-    <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name="Ifsul" component={Localif} 
-        options={{
-          tabBarIcon: () => (<Icon name="desktop-outline" size={30} color="black" />)
-      }}/>
-        <Tab.Screen name="Unipampa" component={Localunipampa} 
-         options={{
-          tabBarIcon: () => (<Icon name="earth" size={30} color="black" />)
-        }}/>
-        <Tab.Screen name="Ideau" component={Localideau}
-        options={{
-          tabBarIcon: () => (<Icon name="flask" size={30} color="black" />)
-        }}/>
-      </Tab.Navigator>
-    </NavigationContainer>
+          <View style={MeuEstilo.container}>
+          <MapView style={MeuEstilo.map}
+            region={position}
+            onPress={e =>setPosition({...position,
+            latitude: e.nativeEvent.coordinate.latitude,
+            longitude: e.nativeEvent.coordinate.longitude,
+            latitudeDelta:e.nativeEvent.coordinate.latitudeDelta,
+            longitudeDelta:e.nativeEvent.coordinate.longitudeDelta
+            })
+            }>
+
+            <Marker
+               coordinate={position}
+              title={title}
+              description={descricao}
+            />
+          </MapView>
+
+
+  <Text>Latitude : {position.latitude}</Text>
+  <Text>Longitude : {position.longitude}</Text>
+      <TextInput
+          placeholder="Title"
+          value={title}
+          onChangeText={title => setTitle(title)}
+          style={MeuEstilo.input}
+        />
+        <TextInput
+          placeholder="Descricao"
+          value={descricao}
+          onChangeText={descricao => setDescricao(descricao)}
+          style={MeuEstilo.input}
+        />
+         <TouchableOpacity
+          onPress={() => {enviarDados}}
+          style={[MeuEstilo.button, MeuEstilo.buttonOutline]}
+        >
+          <Text style={MeuEstilo.buttonOutlineText}>Salvar</Text>
+        </TouchableOpacity>
+  </View>
   );
-}
+};
+
+export default App;
